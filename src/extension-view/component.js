@@ -1,24 +1,24 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import './component.sass';
-import { ExtensionFrame } from '../extension-frame';
-import { IdentityOptions } from '../constants/identity-options';
-import { ViewerTypes } from '../constants/viewer_types';
-import closeButton from '../img/close_icon.png';
-const { ExtensionAnchor } = window['extension-coordinator'];
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import "./component.sass";
+import { ExtensionFrame } from "../extension-frame";
+import { IdentityOptions } from "../constants/identity-options";
+import { ViewerTypes } from "../constants/viewer_types";
+import closeButton from "../img/close_icon.png";
+const { ExtensionAnchor } = window["extension-coordinator"];
 
 export class ExtensionView extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      mousedOver: false,
+      mousedOver: false
     };
   }
 
   mouseEnter() {
     this.setState({
-      mousedOver: true,
+      mousedOver: true
     });
   }
 
@@ -29,46 +29,57 @@ export class ExtensionView extends Component {
   }
 
   renderLinkedOrUnlinked() {
-    return this.props.linked ? IdentityOptions.Linked : IdentityOptions.Unlinked;
+    return this.props.linked
+      ? IdentityOptions.Linked
+      : IdentityOptions.Unlinked;
   }
 
+  checkValue = value => (value !== undefined && value !== null ? value : {});
   render() {
-    const extensionProps = {}
-    switch(this.props.type) {
+    const extensionProps = {};
+    switch (this.props.type) {
       case ExtensionAnchor.Panel:
         extensionProps.width = "320px";
         break;
       case ExtensionAnchor.Overlay:
-        extensionProps.width = this.props.overlaySize.width;
-        extensionProps.height = this.props.overlaySize.height;
+        this.checkValue(extensionProps).width = this.checkValue(
+          this.props.overlaySize
+        ).width;
+        this.checkValue(extensionProps).height = this.checkValue(
+          this.props.overlaySize
+        ).height;
         break;
       default:
         break;
     }
 
     return (
-
       <div
-        className={'view__wrapper'}
-        onMouseEnter={() => { this.mouseEnter() }}
-        onMouseLeave={() => { this.mouseLeave() }}>
-        <div
-          className={'view__header'}>
-          {(this.props.deleteViewHandler !== undefined && this.state.mousedOver) &&
-            (<div className={'view__close_button'}
-              onClick={() => { this.props.deleteViewHandler(this.props.id) }}>
-            <img
-              alt='Close'
-              src={closeButton}
-            />
-            </div>)
-          }
-          <div className={'view__descriptor'}>
-            { this.props.role }
-          </div>
-          <div className={'view__descriptor'}>
-            {(this.props.role === ViewerTypes.LoggedIn) ?
-              this.renderLinkedOrUnlinked() : null}
+        className={"view__wrapper"}
+        onMouseEnter={() => {
+          this.mouseEnter();
+        }}
+        onMouseLeave={() => {
+          this.mouseLeave();
+        }}
+      >
+        <div className={"view__header"}>
+          {this.props.deleteViewHandler !== undefined &&
+            this.state.mousedOver && (
+              <div
+                className={"view__close_button"}
+                onClick={() => {
+                  this.props.deleteViewHandler(this.props.id);
+                }}
+              >
+                <img alt="Close" src={closeButton} />
+              </div>
+            )}
+          <div className={"view__descriptor"}>{this.props.role}</div>
+          <div className={"view__descriptor"}>
+            {this.props.role === ViewerTypes.LoggedIn
+              ? this.renderLinkedOrUnlinked()
+              : null}
           </div>
         </div>
         <div
@@ -76,8 +87,9 @@ export class ExtensionView extends Component {
           ref={this._boundIframeHostRefHandler}
           style={{
             height: extensionProps.height,
-            width: extensionProps.width,
-          }}>
+            width: extensionProps.width
+          }}
+        >
           <ExtensionFrame
             iframeClassName={`rig-frame frameid-${this.props.id}`}
             extension={this.props.extension}
@@ -96,5 +108,5 @@ ExtensionView.propTypes = {
   type: PropTypes.string.isRequired,
   mode: PropTypes.string.isRequired,
   role: PropTypes.string,
-  overlaySize: PropTypes.object,
+  overlaySize: PropTypes.object
 };
